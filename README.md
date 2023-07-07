@@ -1,8 +1,12 @@
 # homework-group-15
 This warehouse is used for the 2021 practical course project work of the School of Cyberspace Security of Shandong University
 
+<<<<<<< HEAD
 Group number -15
 
+=======
+此仓库用于山东大学网络空间安全学院2021级实践课项目作业组号-15
+>>>>>>> b4b357ceabf4e18a5a8332f502825819fcf1129a
 *Project1: implement the naïve birthday attack of reduced SM3
 *Project2: implement the Rho method of reduced SM3
 *Project3: implement length extension attack for SM3, SHA256, etc.
@@ -25,4 +29,8 @@ Group number -15
 *Project20: forge a signature to pretend that you are Satoshi
 *Project21: ECMH PoC
 *Project22: Schnorr Bacth
+<<<<<<< HEAD
 *Project23: research report on MPT
+=======
+*Project23: research report on MPT
+>>>>>>> b4b357ceabf4e18a5a8332f502825819fcf1129a
