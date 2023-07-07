@@ -1,8 +1,8 @@
-# homework-group-15
-This a repository for group 15 
-
-此仓库用于山东大学网络空间安全学院2021级实践课项目作业组号-15
+# homework-group-15 
+This repository is used for the 2021 practical course project work of the School of Cyberspace Security of Shandong University
+Group number -15
 *Project1: implement the naïve birthday attack of reduced SM3
+
 *Project2: implement the Rho method of reduced SM3
 *Project3: implement length extension attack for SM3, SHA256, etc.
 *Project4: do your best to optimize SM3 implementation (software)
