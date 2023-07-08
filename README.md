@@ -35,17 +35,15 @@ Group number -15
 
 *Project16: implement sm2 2P decrypt with real network communication
 
-*Project17: implement sm2 2P decrypt with real network communication
+*Project17：比较Firefox和谷歌的记住密码插件的实现区别
 
-*Project18：比较Firefox和谷歌的记住密码插件的实现区别
+*Project18: send a tx on Bitcoin testnet, and parse the tx data down to every bit, better write script yourself
 
-*Project19: send a tx on Bitcoin testnet, and parse the tx data down to every bit, better write script yourself
+*Project19: forge a signature to pretend that you are Satoshi
 
-*Project20: forge a signature to pretend that you are Satoshi
+*Project20: ECMH PoC
 
-*Project21: ECMH PoC
+*Project21: Schnorr Bacth
 
-*Project22: Schnorr Bacth
-
-*Project23: research report on MPT
+*Project22: research report on MPT
 
