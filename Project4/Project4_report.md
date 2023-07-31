@@ -1,3 +1,6 @@
+# Project4 do your best to optimize SM3 implementation (software)
+## 代码实现
+```c
 #include <stdio.h>
 #include <stdlib.h>
 #include <time.h>
@@ -123,7 +126,7 @@ void mextend(uint32 W[132],uint32 B[16]) {
 		W[i] = W[i - 68] ^ W[i - 64];
 	}
 }
-void CF(uint32 b[16]/*,uint32 IV[8]*/) {
+void CF(uint32 b[16]) {
 	uint32 W[132] = { 0 };
 	mextend(W, b);
 	/*for (int i = 0; i < 132; i += 1) {
@@ -179,10 +182,8 @@ void CF(uint32 b[16]/*,uint32 IV[8]*/) {
 		printf("%08x ", IV[i]);
 	}*/
 }
-void IC(uint32* m,uint64 mlen/*,uint32 IV*/) {
-	/*for (short i = 0; i < 8; i++) {
-		V[i] = IV[i];
-	}*/
+void IC(uint32* m,uint64 mlen) {
+	
 	uint32 B[16] = { 0 };
 	for (uint64 i = 0; i < mlen; i += 16) {
 		for (short j = 0; j < 16; j += 1) {
@@ -191,7 +192,7 @@ void IC(uint32* m,uint64 mlen/*,uint32 IV*/) {
 		CF(B,IV);
 	}
 }
-void SM3hash(char s[],uint32 size/*,uint32 HV[8]*/) {
+void SM3hash(char s[],uint32 size) {
 	InitialVector(IV);
 	uint64 a = size / 64 + 1;
 	short b = size % 64;
@@ -208,6 +209,25 @@ void SM3hash(char s[],uint32 size/*,uint32 HV[8]*/) {
 	printf("-----------------------------------------\n");*/
 	IC(m, mlen,IV);
 }
+```
+## 正确性检测
+根据国家密码管理局发布的SM3密码杂凑算法附录A的运算示例编写
+```c
+int main() {
+	char str[64] = { "abcdabcdabcdabcdabcdabcdabcdabcdabcdabcdabcdabcdabcdabcdabcdabcd" };
+	uint32 size = sizeof(str);
+		SM3hash(str, size);
+	printf("\n------------------------------\nSM3 hash value is:\n");
+	for (int i = 0; i < 8; i += 1) {
+		printf("%08x ", IV[i]);
+	}
+}
+```
+由于数据较长，中间结果不在截图中体现，这里只展示结果
+![](https://s3.bmp.ovh/imgs/2023/07/31/74ebf31ecab2fc40.png)
+可以看出和国家密码管理局发布的SM3密码杂凑算法附录A的运算示例的示例2结果相符，因此代码是正确的
+## 运行时间测试
+```c
 int main() {
 	char str[64] = { "abcdabcdabcdabcdabcdabcdabcdabcdabcdabcdabcdabcdabcdabcdabcdabcd" };
 	uint32 size = sizeof(str);
@@ -223,3 +243,7 @@ int main() {
 		printf("%08x ", IV[i]);
 	}
 }
+```
+运行得到
+![](https://s3.bmp.ovh/imgs/2023/07/31/e1ddd1d5403fa509.png)
+也就是说，运行10000次SM3杂凑函数的时间为0.112s，因此一次hash消耗的时间为$$1.12×10^{-6}$$s
