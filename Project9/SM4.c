@@ -130,7 +130,7 @@ void encrypt(uint32 k[4], uint32 m[4], uint32 c[4])
 }
 void decrypt(uint32 k[], uint32 m[], uint32 c[])
 {
-	printf("------------解密中------------\n");
+	printf("\n------------解密中------------\n");
 	uint32 C[36] = { 0 };
 	uint32 K[36] = { 0 };
 
@@ -149,7 +149,7 @@ void decrypt(uint32 k[], uint32 m[], uint32 c[])
 	for (int i = 0; i < 4; i += 1)
 	{
 		m[i] = C[35 - i];
-		printf("%x ", m[i]);
+		//printf("%x ", m[i]);
 	}
 }
 int main()
@@ -172,10 +172,10 @@ int main()
 		if (i == 3)
 			printf("\n");
 	}
-
+	encrypt(k, m, c);
 	clock_t start, end;
 	start = clock();
-	for (int i = 0; i < 1000; i++) {
+	for (int i = 0; i < 10000; i++) {
 		encrypt(k, m, c);
 	}
 	end = clock();
@@ -187,7 +187,11 @@ int main()
 	printf("\ntime=%fs\n", (double)(end - start) / CLK_TCK);
 	//start = clock();
 	/*decrypt(k, m, c);
-	end = clock();
+	for (int i = 0; i < 4; i += 1)
+	{
+		printf("%x ", m[i]);
+	}*/
+	/*end = clock();
 	printf("\ntime=%fs\n", (double)(end - start) / CLK_TCK);*/
 
 }
