@@ -27,6 +27,7 @@ $$
 计算$$s_3=d_2\left(r+k_2\right) \bmod n$$
 （4）发送$$r,s_2,s_3$$至client1
 ![](https://img1.imgtp.com/2023/07/28/YlMvuYJZ.png)
-
+## 椭圆曲线参数选取
+![](https://img1.imgtp.com/2023/07/31/mUo5HE9X.png)
 ## 运行结果
 ![](https://img1.imgtp.com/2023/07/28/HHCT1TpL.png)
