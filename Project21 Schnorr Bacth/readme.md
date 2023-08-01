@@ -4,7 +4,7 @@
 
 ### 1、Schnorr数字签名算法简单流程
 
-Setup:
+Setup:   
 $$
 \begin{aligned}
 & \mathrm{x}:=\text { random number } \quad \text { (aka private key) } \\
@@ -13,8 +13,11 @@ $$
 \end{aligned}
 $$
 
+  
 
 Sign:
+
+
 $$
 \begin{aligned}
 & r:=r a n d o m \text { number (aka nonce) } \\
@@ -25,6 +28,8 @@ $$
 \end{aligned}
 $$
 Verify:
+
+
 $$
 \begin{aligned}
 & \text { receive }(R, X, s, \text { message }) \\
@@ -35,7 +40,7 @@ $$
 \end{aligned}
 $$
 
-
+  
 
 ### 2、schnorr batch verify
 
