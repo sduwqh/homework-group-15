@@ -1,0 +1,1 @@
+pip install snowland-smx==0.3.2a1
