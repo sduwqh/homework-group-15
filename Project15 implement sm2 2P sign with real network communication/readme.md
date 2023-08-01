@@ -1,13 +1,8 @@
 # implement sm2 2P sign with real network communication
 ## 流程
-Public key :
-$$
-P=\left[\left(d_1 d_2\right)^{-1}-1\right] G
-$$
-Private key：
-$$
-d=\left(d_1 d_2\right)^{-1}-1
-$$
+Public key :  $$P=\left[\left(d_1 d_2\right)^{-1}-1\right] G$$
+Private key： $$d=\left(d_1 d_2\right)^{-1}-1$$
+
 ### 一、client1
 1.生成私钥 $$d_1 \in[1, n-1]$$ ，计算 $$P_1=d_1^{-1} \cdot G$$ ，发送p1至client2
 3.（1）计算 $$M^{\prime}=Z \| M,   e=Hash(M') $$
