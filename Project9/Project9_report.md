@@ -1,7 +1,9 @@
 # Project9 AES / SM4 software implementation
 
 ## 一、SM4软件实现
+
 ### 代码实现
+
 ```c
 #include <stdio.h>
 #include <time.h>
@@ -158,7 +160,9 @@ void decrypt(uint32 k[], uint32 m[], uint32 c[])
 	}
 }
 ```
+
 ### 正确性验证
+
 ```c
 int main()
 {
@@ -193,10 +197,15 @@ int main()
 	}
 }
 ```
+
 运行得到
+
 ![](https://s3.bmp.ovh/imgs/2023/07/31/c4de366cca3dcfb4.png)
+
 可以观察到加密后的密文解密后可以得到正确的明文，并且另外经过库函数测试发现结果正确，因此加密解密具有正确性
+
 ### 运行时间测试
+
 ```c
 int main()
 {
@@ -233,13 +242,18 @@ int main()
 	printf("\ntime=%fs\n", (double)(end - start) / CLK_TCK);
 }
 ```
+
 运行得到
+
 ![](https://s3.bmp.ovh/imgs/2023/07/31/9665f7ee6d08b0a9.png)
+
 这也就是说加密10000次只需要花费0.022s
 因此一次加密耗时约为$$2.2×10^{-7}$$s
 
 # 二、AES128软件实现
+
 ## 代码实现
+
 为了加速，此代码实现将列混淆的结果预计算出来，因此在加密解密过程中只需查表，从而大大提高加密解密速度，代码如下
 ```c
 #include<stdio.h>
@@ -436,7 +450,9 @@ void AESdecrypt(uint32 state[4], uint32 key[4]) {
 	AddRoundKey(state, 0, W);
 }
 ```
+
 ### 正确性验证
+
 ```c
 int main() {
 	uint32 m[4] = { 0x3243f6a8,0x885a308d,0x313198a2,0xe0370734 };
@@ -456,10 +472,15 @@ int main() {
 	}
 }
 ```
+
 运行得到
+
 ![](https://s3.bmp.ovh/imgs/2023/07/31/fbbf102e31a699a9.png)
+
 可以观察到加密后的密文解密后可以得到正确的明文，并且另外经过库函数测试发现结果正确，因此加密解密具有正确性
+
 ### 运行时间测试
+
 ```c
 int main() {
 	uint32 m[4] = { 0x3243f6a8,0x885a308d,0x313198a2,0xe0370734 };
@@ -481,11 +502,16 @@ int main() {
 	printf("\ntime=%fs\n", (double)(end - start) / CLK_TCK);
 }
 ```
+
 运行得到
+
 ![](https://s3.bmp.ovh/imgs/2023/07/31/eb3d89c1779ee382.png)
+
 这也就是说加密10000次只需要花费0.017s
 因此一次加密耗时约为$$1.7×10^{-7}$$s
+
 ## 运行时间对比
+
 |AES128(T-table)|SM4|
 |------|------|
 |1.7×10^-7|2.2×10^-7|

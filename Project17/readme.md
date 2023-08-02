@@ -115,6 +115,7 @@ Pk11_Decrypt() //使用SDR密钥破译Base64编码的数据
 
 > https://github.com/lclevy/firepwd/blob/master/firepwd.py
 
+后经查找相关资料，上述算法由于3DES的安全性问题被淘汰，更新后的火狐浏览器使用了一个更加安全的方式：openpw
 #### 比较
 
 相比于chrome浏览器，firefox记住密码功能实现更复杂，安全性更高
