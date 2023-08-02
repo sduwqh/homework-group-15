@@ -1,5 +1,5 @@
 import random
-
+import time
 def gcd(a, b):
     r = a % b
     while (r != 0):
@@ -40,7 +40,7 @@ def EC_add(P, Q):
     return Z
 
 
-# 椭圆曲线上的乘法
+## 椭圆曲线上的乘法
 def EC_mul(k, g):
     if k == 0:
         return 0
@@ -53,6 +53,7 @@ def EC_mul(k, g):
     return r
 
 
+
 # 椭圆曲线参数
 a = 2
 b = 2
@@ -60,7 +61,14 @@ p = 17
 g = [5, 1]
 n = 19
 
-
+#secp256k1曲线
+# p = 0xfffffffffffffffffffffffffffffffffffffffffffffffffffffffefffffc2f
+# a = 0
+# b = 7
+# n = 0xfffffffffffffffffffffffffffffffebaaedce6af48a03bbfd25e8cd0364141
+# Gx = 0x79be667ef9dcbbac55a06295ce870b07029bfcdb2dce28d959f2815b16f81798
+# Gy = 0x483ada7726a3c4655da4fbfc0e1108a8fd17b448a68554199c47d08ffb10d4b8
+# g = [Gx, Gy]
 
 def sign(d,m):
     k = random.randint(1, p - 1)
@@ -84,6 +92,7 @@ m = 'Satoshi'
 e = hash(m)
 P = EC_mul(d, g)
 
+t1=time.time()
 r,s=sign(d,m)
 print("Verify signature:")
 print(verify(r,s,m,P))
@@ -112,3 +121,4 @@ def verify_attack(e,r,s,m,p):
 print("e重组伪造签名：")
 e1,r1,s1=e_Reorganization_attack()
 print(verify_attack(e1,r1,s1,m,p))
+print("time:",time.time()-t1)
