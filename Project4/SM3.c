@@ -123,7 +123,7 @@ void mextend(uint32 W[132],uint32 B[16]) {
 		W[i] = W[i - 68] ^ W[i - 64];
 	}
 }
-void CF(uint32 b[16]/*,uint32 IV[8]*/) {
+void CF(uint32 b[16]) {
 	uint32 W[132] = { 0 };
 	mextend(W, b);
 	/*for (int i = 0; i < 132; i += 1) {
@@ -179,19 +179,17 @@ void CF(uint32 b[16]/*,uint32 IV[8]*/) {
 		printf("%08x ", IV[i]);
 	}*/
 }
-void IC(uint32* m,uint64 mlen/*,uint32 IV*/) {
-	/*for (short i = 0; i < 8; i++) {
-		V[i] = IV[i];
-	}*/
+void IC(uint32* m,uint64 mlen) {
+	
 	uint32 B[16] = { 0 };
 	for (uint64 i = 0; i < mlen; i += 16) {
 		for (short j = 0; j < 16; j += 1) {
 			B[j] = m[i + j];
 		}
-		CF(B,IV);
+		CF(B);
 	}
 }
-void SM3hash(char s[],uint32 size/*,uint32 HV[8]*/) {
+void SM3hash(char s[],uint32 size) {
 	InitialVector(IV);
 	uint64 a = size / 64 + 1;
 	short b = size % 64;
@@ -206,7 +204,7 @@ void SM3hash(char s[],uint32 size/*,uint32 HV[8]*/) {
 		}
 	}
 	printf("-----------------------------------------\n");*/
-	IC(m, mlen,IV);
+	IC(m, mlen);
 }
 int main() {
 	char str[64] = { "abcdabcdabcdabcdabcdabcdabcdabcdabcdabcdabcdabcdabcdabcdabcdabcd" };
@@ -222,4 +220,5 @@ int main() {
 	for (int i = 0; i < 8; i += 1) {
 		printf("%08x ", IV[i]);
 	}
+	
 }

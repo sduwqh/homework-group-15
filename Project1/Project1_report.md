@@ -61,3 +61,5 @@ with ThreadPoolExecutor(max_workers=2) as t:
 |32bit|18.204s|
 |40bit|207.783s|
 |48bit|4529.371s|
+
+最高找到48bit的碰撞

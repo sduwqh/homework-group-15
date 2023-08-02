@@ -1,26 +1,30 @@
-# Project4 do your best to optimize SM3 implementation (software)
-## 代码实现
-```c
 #include <stdio.h>
 #include <stdlib.h>
 #include <time.h>
 #include <string.h>
 #define uint32 unsigned int 
 #define uint64 unsigned long long int
-
-uint32 IV[8] = {0x7380166f,0x4914b2b9,0x172442d7,0xda8a0600,0xa96f30bc,0x163138aa,0xe38dee4d,0xb0fb0e4e };
-const uint32 T[64] = {0x79cc4519,0x79cc4519,0x79cc4519,0x79cc4519,0x79cc4519,0x79cc4519,0x79cc4519,0x79cc4519,				0x79cc4519,0x79cc4519,0x79cc4519,0x79cc4519,0x79cc4519,0x79cc4519,0x79cc4519,0x79cc4519,			0x7a879d8a,0x7a879d8a,0x7a879d8a,0x7a879d8a,0x7a879d8a,0x7a879d8a,0x7a879d8a,0x7a879d8a,			 0x7a879d8a,0x7a879d8a,0x7a879d8a,0x7a879d8a,0x7a879d8a,0x7a879d8a,0x7a879d8a,0x7a879d8a,				0x7a879d8a,0x7a879d8a,0x7a879d8a,0x7a879d8a,0x7a879d8a,0x7a879d8a,0x7a879d8a,0x7a879d8a,			0x7a879d8a,0x7a879d8a,0x7a879d8a,0x7a879d8a,0x7a879d8a,0x7a879d8a,0x7a879d8a,0x7a879d8a,			0x7a879d8a,0x7a879d8a,0x7a879d8a,0x7a879d8a,0x7a879d8a,0x7a879d8a,0x7a879d8a,0x7a879d8a,			0x7a879d8a,0x7a879d8a,0x7a879d8a,0x7a879d8a,0x7a879d8a,0x7a879d8a,0x7a879d8a,0x7a879d8a};
+#define uint8 unsigned char
+uint32 IV[8] = { 0x7380166f,0x4914b2b9,0x172442d7,0xda8a0600,0xa96f30bc,0x163138aa,0xe38dee4d,0xb0fb0e4e };
+const uint32 T[64] = { 0x79cc4519,0x79cc4519,0x79cc4519,0x79cc4519,0x79cc4519,0x79cc4519,0x79cc4519,0x79cc4519,
+					  0x79cc4519,0x79cc4519,0x79cc4519,0x79cc4519,0x79cc4519,0x79cc4519,0x79cc4519,0x79cc4519,
+					  0x7a879d8a,0x7a879d8a,0x7a879d8a,0x7a879d8a,0x7a879d8a,0x7a879d8a,0x7a879d8a,0x7a879d8a,
+					  0x7a879d8a,0x7a879d8a,0x7a879d8a,0x7a879d8a,0x7a879d8a,0x7a879d8a,0x7a879d8a,0x7a879d8a,
+					  0x7a879d8a,0x7a879d8a,0x7a879d8a,0x7a879d8a,0x7a879d8a,0x7a879d8a,0x7a879d8a,0x7a879d8a,
+					  0x7a879d8a,0x7a879d8a,0x7a879d8a,0x7a879d8a,0x7a879d8a,0x7a879d8a,0x7a879d8a,0x7a879d8a,
+					  0x7a879d8a,0x7a879d8a,0x7a879d8a,0x7a879d8a,0x7a879d8a,0x7a879d8a,0x7a879d8a,0x7a879d8a,
+					  0x7a879d8a,0x7a879d8a,0x7a879d8a,0x7a879d8a,0x7a879d8a,0x7a879d8a,0x7a879d8a,0x7a879d8a };
 
 uint32 FF(X, Y, Z, j);
 uint32 GG(X, Y, Z, j);
 uint32 loopleft(uint32 a, short length);
 uint32 P0(uint32 X);
 uint32 P1(uint32 X);
-uint32* padding(char* target, uint64 targetlen, uint64 mlen);
+uint32* padding(uint8* target, uint64 targetlen, uint64 mlen);
 void mextend(uint32 W[132], uint32 B[16]);
 void CF(uint32 b[16]);
 void IC(uint32* m, uint64 mlen);
-void SM3hash(char s[], uint32 size);
+void SM3hash(uint8 s[], uint32 size);
 void InitialVector(uint32 V[8]) {
 	V[0] = 0x7380166f;
 	V[1] = 0x4914b2b9;
@@ -56,7 +60,7 @@ uint32 GG(X, Y, Z, j) {
 	}
 }
 uint32 loopleft(uint32 a, short length) {
-	if (length %32 == 0) {
+	if (length % 32 == 0) {
 		return a;
 	}
 	length = length % 32;
@@ -68,9 +72,9 @@ uint32 P0(uint32 X) {
 uint32 P1(uint32 X) {
 	return X ^ loopleft(X, 15) ^ loopleft(X, 23);
 }
-uint32* padding(char* target,uint64 targetlen,uint64 mlen) {
-	
-	uint32* M= (uint32*)calloc(mlen,sizeof(uint32));
+uint32* padding(uint8* target, uint64 targetlen, uint64 mlen) {
+
+	uint32* M = (uint32*)calloc(mlen, sizeof(uint32));
 	for (uint64 i = 0; i < targetlen; i += 4) {
 		uint64 temp = i / 4;
 		if ((targetlen - 1) / 4 == temp) {
@@ -89,26 +93,26 @@ uint32* padding(char* target,uint64 targetlen,uint64 mlen) {
 				M[temp + 1] = 0x80000000;
 				break;
 			}*/
-			for (short j = 0; j < targetlen-i; j += 1){
-				M[temp] = M[temp] << 8 | (uint32)target[i+j];
+			for (short j = 0; j < targetlen - i; j += 1) {
+				M[temp] = M[temp] << 8 | (uint32)target[i + j];
 			}
 			if (targetlen - i == 4) {
 				M[temp + 1] = 0x80000000;
 			}
 			else {
-				M[temp]=M[temp] << 8 |0x80;
-				M[temp]=M[temp]<<(8*(3-targetlen+i));
+				M[temp] = M[temp] << 8 | 0x80;
+				M[temp] = M[temp] << (8 * (3 - targetlen + i));
 			}
 		}
 		else {
 			M[temp] = ((uint32)target[i] << 24) | ((uint32)target[i + 1] << 16) | ((uint32)target[i + 2] << 8) | ((uint32)target[i + 3]);
-		}		
-		M[mlen - 1] = (uint32)(targetlen *8 & 0x00000000ffffffff);
-		M[mlen - 2] = (uint32)(targetlen *8 >> 32 & 0x00000000ffffffff);
+		}
+		M[mlen - 1] = (uint32)(targetlen * 8 & 0x00000000ffffffff);
+		M[mlen - 2] = (uint32)(targetlen * 8 >> 32 & 0x00000000ffffffff);
 	}
 	return M;
 }
-void mextend(uint32 W[132],uint32 B[16]) {
+void mextend(uint32 W[132], uint32 B[16]) {
 	for (short i = 0; i < 16; i += 1) {
 		W[i] = B[i];
 	}
@@ -122,15 +126,6 @@ void mextend(uint32 W[132],uint32 B[16]) {
 void CF(uint32 b[16]) {
 	uint32 W[132] = { 0 };
 	mextend(W, b);
-	/*for (int i = 0; i < 132; i += 1) {
-		printf("%08x ", W[i]);
-		if (i % 8 == 7) {
-			printf("\n");
-		}
-		if (i == 67) {
-			printf("\n");
-		}
-	}*/
 	uint32 SS1, SS2, TT1, TT2;
 	uint32 A = IV[0];
 	uint32 B = IV[1];
@@ -141,16 +136,7 @@ void CF(uint32 b[16]) {
 	uint32 G = IV[6];
 	uint32 H = IV[7];
 	for (short j = 0; j < 64; j++) {
-		/*printf("%08x ", A);
-		printf("%08x ", B);
-		printf("%08x ", C);
-		printf("%08x ", D);
-		printf("%08x ", E);
-		printf("%08x ", F);
-		printf("%08x ", G);
-		printf("%08x ", H);
-		printf("\n");*/
-		SS1 = loopleft(loopleft(A, 12) + E + loopleft(T[j],j), 7);
+		SS1 = loopleft(loopleft(A, 12) + E + loopleft(T[j], j), 7);
 		SS2 = SS1 ^ loopleft(A, 12);
 		TT1 = FF(A, B, C, j) + D + SS2 + W[j + 68];
 		TT2 = GG(E, F, G, j) + H + SS1 + W[j];
@@ -171,21 +157,18 @@ void CF(uint32 b[16]) {
 	IV[5] = F ^ IV[5];
 	IV[6] = G ^ IV[6];
 	IV[7] = H ^ IV[7];
-	/*for (int i = 0; i < 8; i += 1) {
-		printf("%08x ", IV[i]);
-	}*/
 }
-void IC(uint32* m,uint64 mlen) {
-	
+void IC(uint32* m, uint64 mlen) {
+
 	uint32 B[16] = { 0 };
 	for (uint64 i = 0; i < mlen; i += 16) {
 		for (short j = 0; j < 16; j += 1) {
 			B[j] = m[i + j];
 		}
-		CF(B,IV);
+		CF(B);
 	}
 }
-void SM3hash(char s[],uint32 size) {
+void SM3hash(uint8 s[], uint32 size) {
 	InitialVector(IV);
 	uint64 a = size / 64 + 1;
 	short b = size % 64;
@@ -193,50 +176,73 @@ void SM3hash(char s[],uint32 size) {
 		a = a + 1;
 	uint64 mlen = 16 * a;
 	uint32* m = padding(s, size, mlen);
-	/*for (int i = 0; i < 16; i += 1) {
+	printf("\nmessege after padding is\n");
+	for (int i = 0; i < mlen; i += 1) { 
 		printf("%08x ", m[i]);
 		if (i % 8 == 7) {
 			printf("\n");
 		}
 	}
-	printf("-----------------------------------------\n");*/
-	IC(m, mlen,IV);
+	//printf("-----------------------------------------\n");
+	IC(m, mlen);
 }
-```
-## 正确性检测
-根据国家密码管理局发布的SM3密码杂凑算法附录A的运算示例编写
-```c
+void SM3hashAttack(uint8 s[], uint32 size,uint32 size0) {
+	uint64 a = size / 64 + 1;
+	short b = size % 64;
+	if (b >= 56)
+		a = a + 1;
+	uint64 mlen = 16 * a;
+	uint32* m = padding(s, size, mlen);
+	printf("\nmessege after padding is\n");
+	for (int i = 0; i < mlen; i += 1) {
+		printf("%08x ", m[i]);
+		if (i % 8 == 7) {
+			printf("\n");
+		}
+	}
+	printf("-----------------------------------------\n");
+	uint64 a0 = size0 / 64 + 1;
+	short b0 = size0 % 64;
+	if (b0 >= 56)
+		a0 = a0 + 1;
+	//printf("a0=%08x ", size0);
+	m[mlen - 1] += a0 * 512;
+	printf("\nmessege after padding is\n");
+	for (int i = 0; i < mlen; i += 1) {
+		printf("%08x ", m[i]);
+		if (i % 8 == 7) {
+			printf("\n");
+		}
+	}
+	printf("-----------------------------------------\n");
+	/*for (int i = 0; i < 8; i += 1) {
+		printf("%08x ", IV[i]);
+	}*/
+	IC(m, mlen);
+}
 int main() {
-	char str[64] = { "abcdabcdabcdabcdabcdabcdabcdabcdabcdabcdabcdabcdabcdabcdabcdabcd" };
-	uint32 size = sizeof(str);
-		SM3hash(str, size);
+	uint8 str1[6] = { "shuiyc" };
+	uint32 size1 = sizeof(str1);
+	SM3hash(str1, size1);
 	printf("\n------------------------------\nSM3 hash value is:\n");
 	for (int i = 0; i < 8; i += 1) {
 		printf("%08x ", IV[i]);
 	}
-}
-```
-由于数据较长，中间结果不在截图中体现，这里只展示结果
-![](https://s3.bmp.ovh/imgs/2023/07/31/74ebf31ecab2fc40.png)
-这个结果和国家密码管理局发布的SM3密码杂凑算法附录A的运算示例的示例2结果相符，因此代码是正确的
-## 运行时间测试
-```c
-int main() {
-	char str[64] = { "abcdabcdabcdabcdabcdabcdabcdabcdabcdabcdabcdabcdabcdabcdabcdabcd" };
-	uint32 size = sizeof(str);
-	clock_t start, end;
-	start = clock();
-	for (int i = 0; i < 10000; i += 1) {
-		SM3hash(str, size);
-	}
-	end = clock();
-	printf("\ntime=%fs\n", (double)(end - start) / CLK_TCK);
+	printf("\nstarting length entension attack...\n");
+	uint8 str2[16] = { "is attacking SM3" };
+	uint32 size0 = sizeof(str2);
+	SM3hashAttack(str2, size0, size1);
 	printf("\n------------------------------\nSM3 hash value is:\n");
 	for (int i = 0; i < 8; i += 1) {
 		printf("%08x ", IV[i]);
 	}
+	printf("\n");
+	uint8 str3[80] = { "shuiyc\x80\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00""0is attacking SM3" };
+	uint32 size3 = sizeof(str3);
+	SM3hash(str3, size3);
+	printf("\n------------------------------\nSM3 hash value is:\n");
+	for (int i = 0; i < 8; i += 1) {
+		printf("%08x ", IV[i]);
+	}
+	
 }
-```
-运行得到
-![](https://s3.bmp.ovh/imgs/2023/07/31/e1ddd1d5403fa509.png)
-也就是说，运行10000次SM3杂凑函数的时间为0.112s，因此一次hash消耗的时间为$$1.12×10^{-6}$$s
