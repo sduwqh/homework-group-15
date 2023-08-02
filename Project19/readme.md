@@ -20,10 +20,30 @@ ECDSA是ECC与DSA的结合，整个签名过程与DSA类似，所不一样的是
 
 3. 生成签名(r,s):$$ r=X(K) ; s=(e+r d) * k^{-1} $$
 
+```python
+def sign(d,m):
+    k = random.randint(1, p - 1)
+    K=EC_mul(k,g)
+    r=K[0]%n
+    e=hash(m)
+    s=((e+r*d)*xgcd(k,n))%n
+    return r,s
+```
+
 **验证：**
 
 1. 计算 $$ e=H(m) $$
 2. 验证 $$ X((eG+rP)*s^{-1})=r $$
+
+```python
+def verify(r,s,m,P):
+    e=hash(m)
+    point=EC_add(EC_mul((e*xgcd(s,n))%n,g),EC_mul((r*xgcd(s,n))%n,P))*xgcd(s,n)
+    if point[0]%n==r:
+        return True
+    else:
+        return False
+```
 
 
 
@@ -34,7 +54,9 @@ ECDSA是ECC与DSA的结合，整个签名过程与DSA类似，所不一样的是
 - 因 $r=X(K)=X(-K) ，-K$ 对于该签名依然有效。
 - 以 $-K$ 点生成签名: $(e,(r,-s))$
 
-
+```python
+verify(r,EC_mul(-1,s),m,P) #true
+```
 
 ##### e重组伪造：
 攻击者模型
@@ -45,6 +67,26 @@ ECDSA是ECC与DSA的结合，整个签名过程与DSA类似，所不一样的是
 - ECDSA: 计算 $r=X(K) 、 s=r b^{-1} 、 e=a r b^{-1}$
 - SM2: 计算 $r=b-a 、 s=a 、 e=X(K)-b+a$
 - $(e,(r, s))$ 即合法签名
+
+```python
+#e重组
+def e_Reorganization_attack():
+    a1 = random.randint(1, p - 1)
+    b1 = random.randint(1, p - 1)
+    K1=EC_add(EC_mul(a1,g),EC_mul(b1,P))
+    r1=K1[0]%n
+    s1=(r1*xgcd(b1,n))%n
+    e1=(a1*r1*xgcd(b1,n))%n
+    return e1,r1,s1
+
+def verify_attack(e,r,s,m,p):
+    point = EC_add(EC_mul((e * xgcd(s, n)) % n, g), EC_mul((r * xgcd(s, n)) % n, P)) * xgcd(s, n)
+    if point[0] % n == r:
+        return True
+    else:
+        return False
+
+```
 
 代码运行结果：
 
