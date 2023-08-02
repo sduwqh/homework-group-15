@@ -1,10 +1,14 @@
 # Project3: implement length extension attack for SM3, SHA256, etc
+
 ## 一、攻击原理
+
 由于sha256和SM3的实现大致是将消息填充后进行压缩迭代，并且将上一轮迭代的结果作为下一轮的初始向量输入进压缩迭代的部件，这就产生了一个漏洞：
 如果已知str1的长度以及其hash值，那么对任意str2，我们都可以求出hash(pad(str1)||str2)的值
 这是因为str1的hash值已知，因此可以修改hash函数的初始向量，并将str2进行特殊填充，这里的特殊填充主要是在末尾除了要有str2本身的长度信息，还应该在此基础上加上str1填充后的长度，这样就能伪造pad(str1)||str2的消息填充
 实际上不止SM3和sha256，长度拓展攻击对许多hash函数都有效
+
 ## 二、针对sha256的长度拓展攻击
+
 针对sha256的长度拓展攻击利用python实现，这是因为标准库中的hashlib方便验证sha256攻击的正确性。代码实现如下
 
 ```python
@@ -127,10 +131,13 @@ if h2==h3:
 ```
 
 运行代码，得到以下结果
+
 ![](https://s3.bmp.ovh/imgs/2023/08/02/9bc7dbf55ff5cbc0.png)
+
 可以看到在我们将原字符串的hash值作为初始向量修改后，再将拓展的字符串进行特殊填充后攻击得到的hash值与pad(str1)||str2的hash值相同，因此长度拓展攻击成功
 
 ## 三、针对sha256的长度拓展攻击
+
 针对SM3的长度拓展攻击利用c实现，这是因为Project4中本人已经实现了SM3的c语言版本，攻击代码如下
 ```c
 #include <stdio.h>
@@ -382,5 +389,7 @@ int main() {
 ```
 
 运行代码，得到以下结果
+
 ![](https://s3.bmp.ovh/imgs/2023/08/02/1a43aac259de93e8.png)
+
 在原字符串str1被hash之后，hash值作为初始向量，因此SM3hashAttack函数中无需像正常SM3hash一样初始化IV。接着在SM3hashAttack函数中将待拓展的字符串str2先普通填充，再加上pad(str1)的长度，压缩迭代，得到结果与hash(str3)结果一致，其中str3=pad(str1)||str2，因此长度拓展攻击成功

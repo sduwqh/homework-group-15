@@ -1,5 +1,7 @@
 # Project4 do your best to optimize SM3 implementation (software)
+
 ## 代码实现
+
 ```c
 #include <stdio.h>
 #include <stdlib.h>
@@ -203,8 +205,11 @@ void SM3hash(char s[],uint32 size) {
 	IC(m, mlen,IV);
 }
 ```
+
 ## 正确性检测
+
 根据国家密码管理局发布的SM3密码杂凑算法附录A的运算示例编写
+
 ```c
 int main() {
 	char str[64] = { "abcdabcdabcdabcdabcdabcdabcdabcdabcdabcdabcdabcdabcdabcdabcdabcd" };
@@ -219,7 +224,9 @@ int main() {
 由于数据较长，中间结果不在截图中体现，这里只展示结果
 ![](https://s3.bmp.ovh/imgs/2023/07/31/74ebf31ecab2fc40.png)
 这个结果和国家密码管理局发布的SM3密码杂凑算法附录A的运算示例的示例2结果相符，因此代码是正确的
+
 ## 运行时间测试
+
 ```c
 int main() {
 	char str[64] = { "abcdabcdabcdabcdabcdabcdabcdabcdabcdabcdabcdabcdabcdabcdabcdabcd" };
@@ -237,6 +244,9 @@ int main() {
 	}
 }
 ```
+
 运行得到
+
 ![](https://s3.bmp.ovh/imgs/2023/07/31/e1ddd1d5403fa509.png)
+
 也就是说，运行10000次SM3杂凑函数的时间为0.112s，因此一次hash消耗的时间为$$1.12×10^{-6}$$s
