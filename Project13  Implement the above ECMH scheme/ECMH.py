@@ -1,5 +1,5 @@
 import hashlib
-import random
+import time
 
 def gcd(a, b):
     r = a % b
@@ -141,6 +141,10 @@ def ECMH_set(m_set):
 
 
 m='1234'
+t1=time.time()
 print("single message hash：",ECMH(m))
+print("single message hash time:",time.time()-t1)
 m_set=['1234','5678','0000']
-print("multiple message hashe:",ECMH_set(m_set))
+t2=time.time()
+print("multiple message hash:",ECMH_set(m_set))
+print("multiple message hash time:",time.time()-t2)
