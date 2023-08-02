@@ -5,51 +5,70 @@
 ### 1、Schnorr数字签名算法简单流程
 
 Setup:   
-$$
-\begin{aligned}
-& \mathrm{x}:=\text { random number } \quad \text { (aka private key) } \\
-& \mathrm{G}:=\text { common point } \\
-& \mathrm{X}:=\mathrm{x}{ }^{\star} \mathrm{G} \quad \text { (aka public key) }
-\end{aligned}
-$$
 
-  
+  ![](https://img1.imgtp.com/2023/08/02/rYPFd8pT.png)
 
 Sign:
 
 
-$$
-\begin{aligned}
-& r:=r a n d o m \text { number (aka nonce) } \\
-& R:=r * G \quad \text { (aka commitment) } \\
-& e:=\text { Hash } R, X \text {, message)(aka challenge) } \\
-& \mathrm{s}:=r+e* x \quad \text { (aka response) } \\
-& \text { return }(R, X, s \text {, message) } \quad((s, e) \text { aka signature) }
-\end{aligned}
-$$
+![](https://img1.imgtp.com/2023/08/02/w1OMVpqK.png)
+
 Verify:
 
+  ![](https://img1.imgtp.com/2023/08/02/B4dIkb8u.png)
 
-$$
-\begin{aligned}
-& \text { receive }(R, X, s, \text { message }) \\
-& \text { e }:=\operatorname{Hash}(R, X \text {, message }) \\
-& \mathrm{s} 1:=R+e* X \\
-& \mathrm{~s} 2:=\mathrm{s}* \mathrm{G}\\
-& \text {return OK if S1 qeuals S2} \\
-\end{aligned}
-$$
+```python
+def sign(msg,sk):
+    r=random.randint(0,n-1)
+    R=EC_mul(G,r)
+    e = sha256(R[0].to_bytes(32, byteorder="big") + bytes_point(EC_mul(G, sk)) + msg)
+    s=r+e*sk
+    return R,s
 
-  
+#sG=R+e*pk
+def verify(msg,pk,R,sig):
+    e = sha256(R[0].to_bytes(32, byteorder="big") + bytes_point(pk) + msg)
+    s1=EC_add(R,EC_mul(pk,e))
+    s2=EC_mul(G,sig)
+    if s1==s2:
+        return True
+    else:
+        return False
+```
+
+
 
 ### 2、schnorr batch verify
 
 ![](https://img1.imgtp.com/2023/07/11/xHFxjOpY.png)
 
-只有三个签名同时验证成功batch才能验证成功
+```python
+def schnorr_batch(msg_list,pk_list,R_list,sig_list):
+    sig=0
+    e=[]
+    for i in sig_list:
+        sig+=i
+
+    s1 = EC_mul(G, sig)
+    tmp1=None
+    for i in range(0,len(msg_list)):
+        e.append(sha256(R_list[i][0].to_bytes(32, byteorder="big") + bytes_point(pk_list[i]) + msg_list[i]))
+    for i in range(0,len(msg_list)):
+        tmp1=EC_add(tmp1,EC_mul(pk_list[i],e[i]))
+    tmp2=None
+    for i in range(0, len(msg_list)):
+        tmp2=EC_add(tmp2,R_list[i])
+    s2=EC_add(tmp1,tmp2)
+    if s1==s2:
+        return True
+    else:
+        return False
+```
+
+只有三个签名同时验证成功batch才能验证成功，且签名存在随机性
 
 代码运行结果：
 
 ![](https://img1.imgtp.com/2023/07/11/pav6LwRA.png)
 
-可见时间减少了一半
+可见通过batch同时验证签名所用时间减少了50%左右
