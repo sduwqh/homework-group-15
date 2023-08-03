@@ -80,29 +80,17 @@ inv3 = pow(S1 + R1, int(crypt_sm2.ecc_table['n'], base=16) - 2, int(crypt_sm2.ec
 # user1 can deduce user3 secret key
 d2 = ((k - S3) * inv2) % n
 if d2 == int(crypt_sm2_1.private_key, 16):
-    print("compute d successfully")
+    print("user1 computed user3's d successfully")
     print("d=", '%064x' % d2)
 else:
     print("fail to compute d")
 # user3 can deduce user1 secret key
 d3 = ((k - S1) * inv3) % n
 if d3 == int(crypt_sm2.private_key, 16):
-    print("compute d successfully")
+    print("user3 computed user1's d successfully")
     print("d=", '%064x' % d3)
 else:
     print("fail to compute d")
-
-# （r,s) and (r, −s) are both valid signatures, lead to blockchain network split
-# print("when（r,s) and (r, −s) are both valid signatures")
-# S4=(-S1)
-# S_str4=format(S4, f'0{64}X')
-# signature4=R_str1+S_str4
-# print(signature4)
-# is_valid = crypt_sm2.verify(signature4, data1)
-# if is_valid:
-#     print("signature is valid.")
-# else:
-#     print("signature is invalid.")
 
 # one can forge signature if the verification does not check m
 print("when the verification does not check m... ")
@@ -168,7 +156,8 @@ else:
 print("when using same d and k with ECDSA...")
 # 私钥（十六进制或整数形式）
 private_key = int(crypt_sm2.private_key, 16)
-
+# 因为ECDSA签名算法的库函数不包括SM2所使用的椭圆曲线参数集。所有这里我们自定义一个与SM2推荐相同的椭圆曲线参数集。
+# 用于ECDSA签名算法。并结合已有的库函数给出ECDSA算法的完整py实现。
 import collections
 import hashlib
 
@@ -189,6 +178,7 @@ curve = EllipticCurve(
     # Subgroup cofactor.
     h=1,
 )
+
 
 def inverse_mod(k, p):
     """Returns the inverse of k modulo p.
@@ -353,7 +343,7 @@ def sign_message(private_key, message):
         r = x % curve.n
         s = ((z + r * private_key) * inverse_mod(k, curve.n)) % curve.n
 
-    return (r, s)
+    return r, s
 
 
 def verify_signature(public_key, message, signature):
@@ -376,9 +366,6 @@ def verify_signature(public_key, message, signature):
 
 public = make_keypair(private_key)
 signature = sign_message(private_key, data1)
-print('Signature: (0x{:x}, 0x{:x})'.format(*signature))
-print('Verification:', verify_signature(public, data1, signature))
-
 # With the two sigs, private key d can be recovered:
 e = hash_message(data1)
 R = signature[0]

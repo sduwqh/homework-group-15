@@ -39,13 +39,7 @@ def ecdsa_verify(public_key, signature, message):
     return is_valid
 
 
-#
-# private_key, public_key = generate_ecdsa_keypair()
-#
-# print("Private key:", private_key.hex())
-# print("Public key:", public_key.hex())
-private_key = b'l\xb6\x04\x89-\x01\xb4\xd3\xab\x0f}\xa0\xc0\xee@\n\x9c\xc9\x7f\x0b\x7f\xff&\x0bv\x82\xe9\x91\xbd\x13\xe0\xfe'
-public_key = b'\xf6\x8b\xb7\xcc\x9aRSf\x9d\xba\x17[q\xdf\xb6<3\xa3q\xb0\xa6\xd5\x86\xc7\xbc\xbd\xb32\x1b9\xd7\x8a\x80\xebEGF#\xfa\xd0\x8e\x8b?Ib8\x80\x9cv\xa6\x8b\xf2\xa2\xa4\x98:\xad\x01\xf0X\x83+\x8e\xf7'
+private_key, public_key = generate_ecdsa_keypair()
 print("Private key:", private_key.hex())
 # 要签名的消息
 message = b"Hello, World!"
@@ -67,12 +61,8 @@ n = curve.order
 a = curve.curve.a()
 b = curve.curve.b()
 gx, gy = curve.generator.x(), curve.generator.y()
-print("n=", n)
 r = signature[0]
 s = signature[1]
-# signature=(4051293998585674784991639592782214972820158391371785981004352359465450369227, 89594240186149241594009538665606955547794554066464651092432507913778975713381)
-# is_valid = ecdsa_verify(public_key, signature, message)
-# print("Is valid:", is_valid)
 
 # Leaking k leads to leaking of d
 print("when leaking k...")
@@ -95,7 +85,6 @@ message1 = b"i love china!"
 hm = hashlib.sha1(message1).digest()
 e1 = int(hm.hex(), 16)
 signature1 = ecdsa_sign(private_key, message1)
-print("Signature1 (r, s):", signature1)
 # Recovering d with 2 signatures and message
 r1 = signature1[0]
 s1 = signature1[1]
@@ -115,27 +104,22 @@ private_key1, public_key1 = generate_ecdsa_keypair()
 print("Private key:", private_key1.hex())
 # 签名
 signature2 = ecdsa_sign(private_key1, message1)
-print("Signature2 (r, s):", signature2)
-
-# 验证签名
-is_valid = ecdsa_verify(public_key1, signature2, message1)
-print("Is valid:", is_valid)
 r2 = signature2[0]
 s2 = signature2[1]
-# user1 compute user's d with two signatures , his own d and messages
+print("user1 compute user's d with two signatures , his own d and messages")
 inv2 = pow(s * r2, -1, n)
 d2 = ((s2 * e + s2 * d * r - s * e1) * inv2) % n
 if d2 == int(private_key1.hex(), 16):
-    print("compute d successfully")
+    print("user1 compute d successfully")
     print("d=", '%064x' % d2)
 else:
     print("fail to compute d")
-# user compute user1's d with two signatures , his own d and messages
+print("user compute user1's d with two signatures , his own d and messages")
 inv3 = pow(s2 * r, -1, n)
 d3 = ((s * e1 + s * d2 * r2 - s2 * e) * inv3) % n
 if d3 == int(private_key.hex(), 16):
-    print("compute d successfully")
-    print("d=", '%064x' % d3)
+    print("user compute d1 successfully")
+    print("d1=", '%064x' % d3)
 else:
     print("fail to compute d")
 
@@ -173,7 +157,6 @@ def ecdsa_verify2(public_key, signature, e):
     verifying_key = ecdsa.VerifyingKey.from_string(public_key, curve=ecdsa.SECP256k1)
     # 编码 (r, s) 元组为字节串格式的签名
     signature = ecdsa.util.sigencode_string(signature[0], signature[1], verifying_key.curve.order)
-    print(signature)
     # 验证签名,跳过了verify函数，直接调用下一层的verify_digest函数，即不检查message,只检查哈希值e
     is_valid = verifying_key.verify_digest(signature, e, sigdecode=ecdsa.util.sigdecode_string)
     # 返回验证结果
