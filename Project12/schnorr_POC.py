@@ -1,8 +1,10 @@
 import hashlib
 import random
 import ecdsa
+import ecpy.curves
 from ecdsa.curves import SECP256k1
 from ecdsa.numbertheory import inverse_mod
+from ecpy.curves import Curve, Point
 
 
 def generate_key_pair():
@@ -29,10 +31,9 @@ def sign(private_key, message, k1=None):
         k = random.randint(1, curve.order - 1)
     # 从临时私钥生成对应的临时公钥
     R = k * curve.generator
-
     # 计算 e = H(R || message)
     e = int.from_bytes(
-        hashlib.sha256(int(R.x()).to_bytes(32, 'big') + int(R.y()).to_bytes(32, 'big') + message).digest(), 'big')
+        hashlib.sha256(ecdsa.ellipticcurve.AbstractPoint.to_bytes(R) + message).digest(), 'big')
 
     # 计算签名的s值
     s = (k + e * private_key) % curve.order
@@ -47,12 +48,13 @@ def verify(public_key, message, signature):
     R, s = signature
     # 计算 e = H(R || message)
     e = int.from_bytes(
-        hashlib.sha256(int(R.x()).to_bytes(32, 'big') + int(R.y()).to_bytes(32, 'big') + message).digest(), 'big')
-    # 计算 sG = R + eP
-    sG = s * curve.generator
-    eP = e * public_key
-    # 如果计算得到的 sG + eP 等于 R，则验证成功
-    return sG == R + eP
+        hashlib.sha256(ecdsa.ellipticcurve.AbstractPoint.to_bytes(R) + message).digest(), 'big')
+    # 计算 sG = s * curve.generator, eP = e * public_key
+    # T = R + eP
+    sG = ecdsa.ellipticcurve.PointJacobi.__mul__(curve.generator, s)
+    T = ecdsa.ellipticcurve.PointJacobi.mul_add(R, 1, public_key, e)
+    # 如果计算得到的 R + eP 等于 sG，则验证成功
+    return sG == T
 
 
 curve = ecdsa.curves.SECP256k1
@@ -128,11 +130,12 @@ else:
 # Malleability, e.g. r, s and r, -s, are both valid signatures, lead to blockchain network split
 print("when（r,s) and (r, −s) are both valid signatures...")
 signature4 = (R, (-s))
-is_valid = verify(public_key, message1, signature4)
-if is_valid:
-    print("signature:(r,-s) is valid.")
-else:
-    print("signature:(r,-s) is invalid.")
+print(signature4)
+# is_valid = verify(public_key, message1, signature4)
+# if is_valid:
+#     print("signature:(r,-s) is valid.")
+# else:
+#     print("signature:(r,-s) is invalid.")
 
 # One can forge signature if the verification does not check m
 print("when the verification does not check m... ")
@@ -202,7 +205,6 @@ def ecdsa_verify(public_key, signature, message):
 
 # 签名
 signature = ecdsa_sign(private_key_b, message1)
-print("Signature (r, s):", signature)
 R3, s3 = signature
 
 hm = hashlib.sha1(message1).digest()
@@ -218,4 +220,5 @@ else:
 
 # Ambiguity of DER encode could lead to blockchain network split
 print("when user encoded with Ambiguity...")
-# 因为我自己实现的schnorr签名算法直接基于算法描述编写，没有一般库函数的层层套接，因此不存在先把消息或签名编码再交给上层函数。故这里暂不给出演示。但显然若编码不规范，就会因为结果的偏差导致签名验证出现分歧。
+# 因为我自己实现的schnorr签名算法直接基于算法描述编写，没有一般库函数的层层套接，因此不存在先把消息或签名编码再交给上层函数。故这里暂不给出演示。
+# 但显然若编码不规范，就会因为结果的偏差导致签名验证出现分歧。
