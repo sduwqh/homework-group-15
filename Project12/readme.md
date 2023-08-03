@@ -386,6 +386,23 @@ d3,d4即为所求私钥。
 
 #### Malleability, e.g. r, s and r, -s, are both valid signatures, lead to blockchain network split
 在椭圆曲线数字签名算法（比如ECDSA和Schnorr）中，签名的可脆性指的是对于给定的消息和私钥，可以通过对签名进行某些修改而得到一个不同但仍然有效的签名。例如，对于一个有效的签名(r, s)，我们可以构造一个有效的签名(r, -s)。它导致了签名的二义性，可能导致网络分裂和安全问题
+由于ECDSA库函数中的点乘函数的实现与椭圆曲线的性质略有不同。这里我们只验证Schnorr 验签函数中，改变s的正负性，不会改变sG所对应的点。因为对于点P(x, y)在曲线上，有y^2 = x^3 + ax + b。当取点的y坐标的相反数时，有(-y)^2 = y^2，而x^3 + ax + b保持不变，因此(x, -y)也在椭圆曲线上。
+这里我们根据椭圆曲线运算规则，编写了椭圆曲线基本运算的python代码实现。如下面的点乘函数。
+```python
+def EC_mul(a, p, a_param, p_mod):
+    # 在椭圆曲线上进行点乘操作
+    x1, y1 = None, None
+    x2, y2 = p
+    for bit in bin(a)[2:]:
+        if bit == '1':
+            x1, y1 = EC_add(x1, y1, x2, y2, a_param, p_mod)
+            x2, y2 = EC_double(x2, y2, a_param, p_mod)
+        else:
+            x2, y2 = EC_add(x2, y2, x1, y1, a_param, p_mod)
+            x1, y1 = EC_double(x1, y1, a_param, p_mod)
+    return x1, y1
+```
+因为Schnorr验签函数验证 sG = R + eP 。而新签名(R,-s)只改变了s的正负性，即只改变了待验证等式的左侧部分（sG）。所有只要验证sG与-sG是同一个点，即证明(r, -s)与(r,s)一样，都是有效的Schnorr签名。
 
 #### Ambiguity of DER encode could lead to blockchain network split
 在 Schnorr 签名中，如果不对 DER 编码进行规范化处理，可能会导致 DER 编码的二义性问题，从而引发区块链网络分裂。
