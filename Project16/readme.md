@@ -8,9 +8,9 @@
 1.Generate sub private key $$d_1 \in[1, n-1]$$
 
 2.get ciphertext $$C=C_1||C_2||C_3$$
-   Check $$ C_1 \neq 0$$
-   Compute $$ T_1=d_1^{-1}*G$$
-   Send $$T_1$$
+   Check $$ C_1 \neq 0 $$  
+   Compute $$ T_1=d_1^{-1}*G $$
+   Send  $$T_1$$ 
 
 4.Recover plaintext $$M'$$ ,receive $$T_2$$
 
