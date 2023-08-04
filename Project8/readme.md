@@ -160,7 +160,7 @@ Visual Studio 2022已经配置了支持arm指令集编译的arm64_neon.h头文�
 在Visual Studio 2022，点击工具->获取工具和功能，即可打开Visual Studio Installer。在这里搜索并下载最新的arm64 msvc生成工具。
 下载并安装完毕后，点击配置管理器，配置Visual Studio 2022的活动解决方案平台。如下图所示。
 ![1691047475762.png](https://img1.imgtp.com/2023/08/03/3Okrm4qx.png)
-这时点击生成解决方案，即可成功生成可执行文件，如下图：
+这时点击生成解决方案，即可成功生成可执行文件armaes.exe，如下图：
 ![1691047580917.png](https://img1.imgtp.com/2023/08/03/x8OtLKS1.png)
 为调试可执行文件，我安装并运行了Visual Studio 2022 远程调试器。
 如下是我的调试记录。为了防止可能出现的认证问题，这里选择关闭身份验证。
